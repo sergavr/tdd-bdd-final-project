@@ -241,16 +241,16 @@ class TestProductModel(unittest.TestCase):
     def test_deserialize(self):
         """It shoud deserialize product from dictionary"""
         data = {}
-        data["name"]="Towel"
-        data["description"]= "Fantastic towel"
-        data["price"]="5.99"
-        data["available"]=True
-        data["category"]="HOUSEWARES"
+        data["name"] = "Towel"
+        data["description"] = "Fantastic towel"
+        data["price"] = "5.99"
+        data["available"] = True
+        data["category"] = "HOUSEWARES"
 
         product = Product()
         product.deserialize(data)
 
-        #Check that the fields match
+        # Check that the fields match
         self.assertEqual(product.name, data["name"])
         self.assertEqual(product.description, data["description"])
         self.assertEqual(product.price, Decimal(data["price"]))
@@ -265,4 +265,3 @@ class TestProductModel(unittest.TestCase):
         data_poor = data.copy()
         del data_poor["name"]
         self.assertRaises(DataValidationError, product.deserialize, data_poor)
-
