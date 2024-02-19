@@ -188,6 +188,48 @@ class TestProductRoutes(TestCase):
         response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_update_product(self):
+        """Tests updating a product"""
+        test_product = self._create_products()[0]
+
+        logging.debug("Added Product: %s", test_product.serialize())
+        data = test_product.serialize()
+        data["description"] = "new_description"
+
+        # Update the product and test the responce code
+        response = self.client.put(f"{BASE_URL}/{test_product.id}", json=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Read the product and check that the name is updated
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        data = response.get_json()
+        self.assertEqual(data["description"], "new_description")
+
+    def test_update_product_not_found(self):
+        """Tests updating product that doesn't exist"""
+        # make some fake json data
+        product = ProductFactory()
+        data = product.serialize()
+        logging.debug("Updating data for product: %s", data)
+        logging.debug("Trying to get product that doesn't exist")
+        response = self.client.put(f"{BASE_URL}/0", json=data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_delete_product(self):
+        """Tests deleting product by id"""
+        test_product = self._create_products()[0]
+        logging.debug("Added Product: %s", test_product.serialize())
+        product_id = test_product.id
+
+        response = self.client.delete(f"{BASE_URL}/{product_id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Read the product and check that the name is updated
+        response = self.client.get(f"{BASE_URL}/{product_id}")
+        data = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(self.get_product_count(), 0)
+
     ######################################################################
     # Utility functions
     ######################################################################
