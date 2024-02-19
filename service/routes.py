@@ -102,6 +102,7 @@ def create_products():
 # PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
 #
 
+
 ######################################################################
 # R E A D   A   P R O D U C T
 ######################################################################
@@ -114,7 +115,9 @@ def get_products(product_id):
     app.logger.info("Request to Retrieve a product with id [%s]", product_id)
     product = Product.find(product_id)
     if not product:
-        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
 
     app.logger.info("Returning product: %s", product.name)
     data = product.serialize()
@@ -125,15 +128,40 @@ def get_products(product_id):
 # U P D A T E   A   P R O D U C T
 ######################################################################
 
-#
-# PLACE YOUR CODE TO UPDATE A PRODUCT HERE
-#
+
+@app.route("/products/<product_id>", methods=["PUT"])
+def update_product(product_id):
+    """Update a product by ID and return updated product json"""
+    app.logger.info("Request to Update a product with id [%s]", product_id)
+    check_content_type("application/json")
+
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+
+    app.logger.info("Found Product: %s", product.serialize())
+    data = request.get_json()
+    product.deserialize(data)
+    product.update()
+    app.logger.info("Product with id [%s] is updated!", product.id)
+
+    message = product.serialize()
+    return message, status.HTTP_200_OK
+
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
 
 
-#
-# PLACE YOUR CODE TO DELETE A PRODUCT HERE
-#
+@app.route("/products/<product_id>", methods=["DELETE"])
+def delete_product(product_id):
+    """Delete a product by ID"""
+    app.logger.info("Request to Delete a product with id [%s]", product_id)
+    product = Product.find(product_id)
+    if product:
+        product.delete()
+    return "", status.HTTP_204_NO_CONTENT
+
