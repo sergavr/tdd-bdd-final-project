@@ -180,6 +180,12 @@ class TestProductRoutes(TestCase):
         self.assertEqual(data["available"], test_product.available)
         self.assertEqual(data["category"], test_product.category.name)
 
+    def test_get_product_not_found(self):
+        """Tests getting product that doesn't exist"""
+        logging.debug("Trying to get product that doesn't exist")
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
     ######################################################################
     # Utility functions
