@@ -92,10 +92,13 @@ def create_products():
 ######################################################################
 # L I S T   A L L   P R O D U C T S
 ######################################################################
-
-#
-# PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
-#
+@app.route("/products", methods=["GET"])
+def list_products():
+    """Lists all available products"""
+    app.logger.info("Getting list of products")
+    products = Product.all()
+    result = [product.serialize() for product in products]
+    return result, status.HTTP_200_OK
 
 
 ######################################################################
@@ -122,8 +125,6 @@ def get_products(product_id):
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
-
-
 @app.route("/products/<product_id>", methods=["PUT"])
 def update_product(product_id):
     """Update a product by ID and return updated product json"""
@@ -149,8 +150,6 @@ def update_product(product_id):
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
-
-
 @app.route("/products/<product_id>", methods=["DELETE"])
 def delete_product(product_id):
     """Delete a product by ID"""
@@ -159,4 +158,3 @@ def delete_product(product_id):
     if product:
         product.delete()
     return "", status.HTTP_204_NO_CONTENT
-
