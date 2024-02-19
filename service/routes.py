@@ -96,9 +96,19 @@ def create_products():
 def list_products():
     """Lists all available products"""
     app.logger.info("Getting list of products")
-    products = Product.all()
-    result = [product.serialize() for product in products]
-    return result, status.HTTP_200_OK
+
+    products = []
+    name = request.args.get("name")
+    if name:
+        app.logger.info("Find by name: %s", name)
+        products = Product.find_by_name(name)
+    else:
+        app.logger.info("Find all")
+        products = Product.all()
+
+    results = [product.serialize() for product in products]
+    app.logger.info("[%s] Products returned", len(results))
+    return results, status.HTTP_200_OK
 
 
 ######################################################################
